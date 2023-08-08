@@ -1,29 +1,18 @@
 package com.ksyun;
 
-import io.javalin.Javalin;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.ksyun.KS3EventDataModel.Ks3CloudEventData;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.http.HttpMessageFactory;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
-
-import static io.cloudevents.core.CloudEventUtils.mapData;
-
+import io.javalin.Javalin;
 import lombok.extern.slf4j.Slf4j;
-
-import com.ksyun.KS3EventDataModel.Ks3CloudEventData;
+import okhttp3.*;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import static io.cloudevents.core.CloudEventUtils.mapData;
 
 
 @Slf4j
@@ -74,14 +63,14 @@ public class App {
 
     public static void SendMessageToFeiShu(String msg) {
         // Get forward proxy IP address and port from ENV.
-        final String forwardProxyIp = System.getenv("PROXY_IP");
-        final int forwardProxyPort = Integer.parseInt(System.getenv("PROXY_PORT"));
+//        final String forwardProxyIp = System.getenv("PROXY_IP");
+//        final int forwardProxyPort = Integer.parseInt(System.getenv("PROXY_PORT"));
         // Get url of FeiShu Bot ID from ENV
         final String WebhookBotId = System.getenv("WEBHOOK_ID");
         // PLEASE Confirm 'forwardProxyIp' with CORRESPOND IP ADDRESS of PROXY Server which in the same VPN with KCF instance!!!
-        final Proxy vpcProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(forwardProxyIp, forwardProxyPort));
+//        final Proxy vpcProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(forwardProxyIp, forwardProxyPort));
         final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        final OkHttpClient client = new OkHttpClient().newBuilder().proxy(vpcProxy).build();
+        final OkHttpClient client = new OkHttpClient().newBuilder().build();
         // FeiShu notifyURL
         String notifyURL = String.format("https://open.feishu.cn/open-apis/bot/v2/hook/%s", WebhookBotId);
         String postBody = "{\"msg_type\":\"text\",\"content\":{\"text\":\"%s\"}}";
